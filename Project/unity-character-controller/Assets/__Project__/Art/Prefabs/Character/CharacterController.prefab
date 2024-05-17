@@ -111,8 +111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 2481763325342161339}
-  airGravity: 0
-  groundGravity: 0
+  airGravity: 9.8
+  groundGravity: 0.5
   movementSpeed: 1.5
   runMultiplier: 3
   rotationFactorPerFrame: 15
