@@ -21,6 +21,7 @@ namespace Core.Gameplay.Character
 
         private CharacterInput _characterInput;
 
+        private Vector3 _appliedMovement;
         private Vector3 _currentMovement;
         private Vector3 _currentRunMovement;
         private Vector2 _currentMovementInput;
@@ -150,15 +151,20 @@ namespace Core.Gameplay.Character
 
         private void UpdateMovement()
         {
-            Vector3 moveVector = IsRunPressed ? _currentRunMovement : _currentMovement;
+            if (IsRunPressed)
+            {
+                _appliedMovement.x = _currentRunMovement.x;
+                _appliedMovement.z = _currentRunMovement.z;
+            }
+            else
+            {
+                _appliedMovement.x = _currentMovement.x;
+                _appliedMovement.z = _currentMovement.z;
+            }
 
-            Debug.Log("movementSettings.MovementSpeed : " + movementSettings.MovementSpeed);
+            _appliedMovement *= movementSettings.MovementSpeed;
 
-            moveVector *= movementSettings.MovementSpeed;
-
-            Debug.Log("moveVector : " + moveVector);
-
-            characterController.Move(moveVector * Time.deltaTime);
+            characterController.Move(_appliedMovement * Time.deltaTime);
         }
 
         private void HandleRotation()
@@ -193,27 +199,23 @@ namespace Core.Gameplay.Character
                 }
 
                 _currentMovement.y = movementSettings.GroundGravity;
-                _currentRunMovement.y = movementSettings.GroundGravity;
+                _appliedMovement.y = movementSettings.GroundGravity;
             }
             else if (IsFalling)
             {
                 float gravity = jumpSettings.JumpProperties.Gravity;
                 float previousVelocityY = _currentMovement.y;
-                float newVelocityY = previousVelocityY + (gravity * movementSettings.FallMultiplier * Time.deltaTime);
-                float finalVelocityY = (previousVelocityY + newVelocityY) * 0.5f;
 
-                _currentMovement.y = finalVelocityY;
-                _currentRunMovement.y = finalVelocityY;
+                _currentMovement.y = previousVelocityY + (gravity * movementSettings.FallMultiplier * Time.deltaTime);
+                _appliedMovement.y = (previousVelocityY + _currentMovement.y) * 0.5f;
             }
             else
             {
                 float gravity = jumpSettings.JumpProperties.Gravity;
                 float previousVelocityY = _currentMovement.y;
-                float newVelocityY = previousVelocityY + (gravity * Time.deltaTime);
-                float finalVelocityY = (previousVelocityY + newVelocityY) * 0.5f;
 
-                _currentMovement.y = finalVelocityY;
-                _currentRunMovement.y = finalVelocityY;
+                _currentMovement.y = previousVelocityY + (gravity * Time.deltaTime);
+                _appliedMovement.y = (previousVelocityY + _currentMovement.y) * 0.5f;
             }
         }
 
@@ -231,8 +233,8 @@ namespace Core.Gameplay.Character
 
                 Jump?.Invoke(_jumpIndex);
 
-                _currentMovement.y = velocity * 0.5f;
-                _currentRunMovement.y = velocity * 0.5f;
+                _currentMovement.y = velocity;
+                _appliedMovement.y = velocity;
             }
             else if (!IsJumpPressed && IsGrounded && IsJumping)
             {

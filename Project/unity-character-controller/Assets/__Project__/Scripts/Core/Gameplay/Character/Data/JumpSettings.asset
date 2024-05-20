@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxJumpVarieties: 2
   JumpProperties:
-    JumpTime: 0.75
-    MaxJumpHeight: 3
+    JumpTime: 0.5
+    MaxJumpHeight: 2
