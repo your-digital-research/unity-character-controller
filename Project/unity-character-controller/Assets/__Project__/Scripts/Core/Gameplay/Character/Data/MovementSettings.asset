@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c3742435980f4bb689e80ac1b716439, type: 3}
-  m_Name: JumpSettings
+  m_Script: {fileID: 11500000, guid: c57ff8aff85ed4940b4a2761b8fa298f, type: 3}
+  m_Name: MovementSettings
   m_EditorClassIdentifier: 
-  MaxJumpVarieties: 2
-  JumpProperties:
-    JumpTime: 0.75
-    MaxJumpHeight: 3
+  GroundGravity: -0.5
+  MovementSpeed: 1.5
+  RunMultiplier: 3
+  FallMultiplier: 2
+  RotationFactorPerFrame: 15

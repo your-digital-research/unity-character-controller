@@ -12,21 +12,7 @@ namespace Core.Gameplay.Character
 
         [Header("References")]
         [SerializeField] private CharacterController characterController;
-
-        [Header("Multipliers")]
-        [SerializeField] private float runMultiplier;
-        [SerializeField] private float fallMultiplier;
-
-        [Header("Gravity")]
-        [SerializeField] private float groundGravity;
-
-        [Header("Speed")]
-        [SerializeField] private float movementSpeed;
-
-        [Header("Rotation")]
-        [SerializeField] private float rotationFactorPerFrame;
-
-        [Header("Jump")]
+        [SerializeField] private MovementSettings movementSettings;
         [SerializeField] private JumpSettings jumpSettings;
 
         #endregion
@@ -103,8 +89,8 @@ namespace Core.Gameplay.Character
             _currentMovement.x = _currentMovementInput.x;
             _currentMovement.z = _currentMovementInput.y;
 
-            _currentRunMovement.x = _currentMovementInput.x * runMultiplier;
-            _currentRunMovement.z = _currentMovementInput.y * runMultiplier;
+            _currentRunMovement.x = _currentMovementInput.x * movementSettings.RunMultiplier;
+            _currentRunMovement.z = _currentMovementInput.y * movementSettings.RunMultiplier;
 
             IsMovementPressed = _currentMovementInput.x != 0 || _currentMovementInput.y != 0;
         }
@@ -166,7 +152,11 @@ namespace Core.Gameplay.Character
         {
             Vector3 moveVector = IsRunPressed ? _currentRunMovement : _currentMovement;
 
-            moveVector *= movementSpeed;
+            Debug.Log("movementSettings.MovementSpeed : " + movementSettings.MovementSpeed);
+
+            moveVector *= movementSettings.MovementSpeed;
+
+            Debug.Log("moveVector : " + moveVector);
 
             characterController.Move(moveVector * Time.deltaTime);
         }
@@ -181,7 +171,7 @@ namespace Core.Gameplay.Character
 
             if (IsMovementPressed)
             {
-                float t = rotationFactorPerFrame * Time.deltaTime;
+                float t = movementSettings.RotationFactorPerFrame * Time.deltaTime;
 
                 Quaternion currentRotation = transform.rotation;
                 Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
@@ -202,14 +192,14 @@ namespace Core.Gameplay.Character
                     Grounded?.Invoke();
                 }
 
-                _currentMovement.y = groundGravity;
-                _currentRunMovement.y = groundGravity;
+                _currentMovement.y = movementSettings.GroundGravity;
+                _currentRunMovement.y = movementSettings.GroundGravity;
             }
             else if (IsFalling)
             {
                 float gravity = jumpSettings.JumpProperties.Gravity;
                 float previousVelocityY = _currentMovement.y;
-                float newVelocityY = previousVelocityY + (gravity * fallMultiplier * Time.deltaTime);
+                float newVelocityY = previousVelocityY + (gravity * movementSettings.FallMultiplier * Time.deltaTime);
                 float finalVelocityY = (previousVelocityY + newVelocityY) * 0.5f;
 
                 _currentMovement.y = finalVelocityY;

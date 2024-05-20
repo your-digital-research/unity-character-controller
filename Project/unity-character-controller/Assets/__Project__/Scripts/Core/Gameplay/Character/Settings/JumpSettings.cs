@@ -28,15 +28,8 @@ namespace Core.Gameplay.Character
         #region SERIALIZED_VARIABLES
 
         [Header("Settings")]
-        [SerializeField] private int maxJumpVarieties;
-        [SerializeField] private JumpProperties jumpProperties;
-
-        #endregion
-
-        #region PROPERTIES
-
-        public int MaxJumpVarieties => maxJumpVarieties;
-        public JumpProperties JumpProperties => jumpProperties;
+        public int MaxJumpVarieties;
+        public JumpProperties JumpProperties;
 
         #endregion
     }
