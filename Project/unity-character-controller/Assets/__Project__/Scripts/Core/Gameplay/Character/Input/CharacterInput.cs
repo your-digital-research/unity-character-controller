@@ -46,6 +46,15 @@ namespace Core.Gameplay.Character
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""0b430656-d069-4afc-88ab-1e601e70946d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -114,6 +123,17 @@ namespace Core.Gameplay.Character
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1d10ce7c-260a-4f55-aae2-94a79b5703b9"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -124,6 +144,7 @@ namespace Core.Gameplay.Character
             m_CharacterControls = asset.FindActionMap("CharacterControls", throwIfNotFound: true);
             m_CharacterControls_Move = m_CharacterControls.FindAction("Move", throwIfNotFound: true);
             m_CharacterControls_Run = m_CharacterControls.FindAction("Run", throwIfNotFound: true);
+            m_CharacterControls_Jump = m_CharacterControls.FindAction("Jump", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -187,12 +208,14 @@ namespace Core.Gameplay.Character
         private List<ICharacterControlsActions> m_CharacterControlsActionsCallbackInterfaces = new List<ICharacterControlsActions>();
         private readonly InputAction m_CharacterControls_Move;
         private readonly InputAction m_CharacterControls_Run;
+        private readonly InputAction m_CharacterControls_Jump;
         public struct CharacterControlsActions
         {
             private @CharacterInput m_Wrapper;
             public CharacterControlsActions(@CharacterInput wrapper) { m_Wrapper = wrapper; }
             public InputAction @Move => m_Wrapper.m_CharacterControls_Move;
             public InputAction @Run => m_Wrapper.m_CharacterControls_Run;
+            public InputAction @Jump => m_Wrapper.m_CharacterControls_Jump;
             public InputActionMap Get() { return m_Wrapper.m_CharacterControls; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -208,6 +231,9 @@ namespace Core.Gameplay.Character
                 @Run.started += instance.OnRun;
                 @Run.performed += instance.OnRun;
                 @Run.canceled += instance.OnRun;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
 
             private void UnregisterCallbacks(ICharacterControlsActions instance)
@@ -218,6 +244,9 @@ namespace Core.Gameplay.Character
                 @Run.started -= instance.OnRun;
                 @Run.performed -= instance.OnRun;
                 @Run.canceled -= instance.OnRun;
+                @Jump.started -= instance.OnJump;
+                @Jump.performed -= instance.OnJump;
+                @Jump.canceled -= instance.OnJump;
             }
 
             public void RemoveCallbacks(ICharacterControlsActions instance)
@@ -239,6 +268,7 @@ namespace Core.Gameplay.Character
         {
             void OnMove(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
+            void OnJump(InputAction.CallbackContext context);
         }
     }
 }

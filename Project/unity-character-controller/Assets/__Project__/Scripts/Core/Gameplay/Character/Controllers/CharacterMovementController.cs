@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 namespace Core.Gameplay.Character
 {
@@ -11,12 +13,21 @@ namespace Core.Gameplay.Character
         [Header("References")]
         [SerializeField] private CharacterController characterController;
 
-        [Header("Settings")]
-        [SerializeField] private float airGravity;
-        [SerializeField] private float groundGravity;
-        [SerializeField] private float movementSpeed;
+        [Header("Multipliers")]
         [SerializeField] private float runMultiplier;
+        [SerializeField] private float fallMultiplier;
+
+        [Header("Gravity")]
+        [SerializeField] private float groundGravity;
+
+        [Header("Speed")]
+        [SerializeField] private float movementSpeed;
+
+        [Header("Rotation")]
         [SerializeField] private float rotationFactorPerFrame;
+
+        [Header("Jump")]
+        [SerializeField] private JumpSettings jumpSettings;
 
         #endregion
 
@@ -28,12 +39,26 @@ namespace Core.Gameplay.Character
         private Vector3 _currentRunMovement;
         private Vector2 _currentMovementInput;
 
+        private int _jumpIndex;
+        private bool _isAtJump;
+
         #endregion
 
         #region PROPERTIES
 
         public bool IsMovementPressed { get; private set; }
         public bool IsRunPressed { get; private set; }
+        public bool IsJumpPressed { get; private set; }
+        public bool IsJumping { get; private set; }
+        public bool IsGrounded => characterController.isGrounded;
+        public bool IsFalling => (_currentMovement.y <= 0 || !IsJumpPressed) && !IsGrounded;
+
+        #endregion
+
+        #region EVENTS
+
+        public event Action<int> Jump;
+        public event Action Grounded;
 
         #endregion
 
@@ -51,9 +76,10 @@ namespace Core.Gameplay.Character
 
         private void Update()
         {
-            UpdateMovement();
             HandleRotation();
+            UpdateMovement();
             HandleGravity();
+            HandleJump();
         }
 
         private void OnDisable()
@@ -72,8 +98,6 @@ namespace Core.Gameplay.Character
 
         private void OnMovementInput(InputAction.CallbackContext obj)
         {
-            // Debug.Log("OnMovementInput() : " + obj.ReadValue<Vector2>());
-
             _currentMovementInput = obj.ReadValue<Vector2>();
 
             _currentMovement.x = _currentMovementInput.x;
@@ -87,9 +111,12 @@ namespace Core.Gameplay.Character
 
         private void OnRun(InputAction.CallbackContext obj)
         {
-            // Debug.Log("OnRun() : " + obj.ReadValueAsButton());
-
             IsRunPressed = obj.ReadValueAsButton();
+        }
+
+        private void OnJump(InputAction.CallbackContext obj)
+        {
+            IsJumpPressed = obj.ReadValueAsButton();
         }
 
         private void InitInput()
@@ -102,6 +129,9 @@ namespace Core.Gameplay.Character
 
             _characterInput.CharacterControls.Run.started += OnRun;
             _characterInput.CharacterControls.Run.canceled += OnRun;
+
+            _characterInput.CharacterControls.Jump.started += OnJump;
+            _characterInput.CharacterControls.Jump.canceled += OnJump;
         }
 
         private void ResetInput()
@@ -112,6 +142,9 @@ namespace Core.Gameplay.Character
 
             _characterInput.CharacterControls.Run.started -= OnRun;
             _characterInput.CharacterControls.Run.canceled -= OnRun;
+
+            _characterInput.CharacterControls.Jump.started -= OnJump;
+            _characterInput.CharacterControls.Jump.canceled -= OnJump;
 
             _characterInput = null;
         }
@@ -160,15 +193,60 @@ namespace Core.Gameplay.Character
 
         private void HandleGravity()
         {
-            if (characterController.isGrounded)
+            if (IsGrounded)
             {
-                _currentMovement.y = -groundGravity;
-                _currentRunMovement.y = -groundGravity;
+                if (_isAtJump)
+                {
+                    _isAtJump = false;
+
+                    Grounded?.Invoke();
+                }
+
+                _currentMovement.y = groundGravity;
+                _currentRunMovement.y = groundGravity;
+            }
+            else if (IsFalling)
+            {
+                float gravity = jumpSettings.JumpProperties.Gravity;
+                float previousVelocityY = _currentMovement.y;
+                float newVelocityY = previousVelocityY + (gravity * fallMultiplier * Time.deltaTime);
+                float finalVelocityY = (previousVelocityY + newVelocityY) * 0.5f;
+
+                _currentMovement.y = finalVelocityY;
+                _currentRunMovement.y = finalVelocityY;
             }
             else
             {
-                _currentMovement.y = -airGravity;
-                _currentRunMovement.y = -airGravity;
+                float gravity = jumpSettings.JumpProperties.Gravity;
+                float previousVelocityY = _currentMovement.y;
+                float newVelocityY = previousVelocityY + (gravity * Time.deltaTime);
+                float finalVelocityY = (previousVelocityY + newVelocityY) * 0.5f;
+
+                _currentMovement.y = finalVelocityY;
+                _currentRunMovement.y = finalVelocityY;
+            }
+        }
+
+        private void HandleJump()
+        {
+            if (!IsJumping && IsGrounded && IsJumpPressed)
+            {
+                int maxJumpVarieties = jumpSettings.MaxJumpVarieties;
+                float velocity = jumpSettings.JumpProperties.Velocity;
+
+                IsJumping = true;
+                _isAtJump = true;
+
+                _jumpIndex = Random.Range(0, maxJumpVarieties);
+
+                Jump?.Invoke(_jumpIndex);
+
+                _currentMovement.y = velocity * 0.5f;
+                _currentRunMovement.y = velocity * 0.5f;
+            }
+            else if (!IsJumpPressed && IsGrounded && IsJumping)
+            {
+                IsJumping = false;
             }
         }
 

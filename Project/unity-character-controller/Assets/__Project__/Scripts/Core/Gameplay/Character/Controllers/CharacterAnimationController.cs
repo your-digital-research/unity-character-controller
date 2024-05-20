@@ -18,6 +18,8 @@ namespace Core.Gameplay.Character
 
         private static readonly int IsWalkingHash = Animator.StringToHash("IsWalking");
         private static readonly int IsRunningHash = Animator.StringToHash("IsRunning");
+        private static readonly int IsJumpingHash = Animator.StringToHash("IsJumping");
+        private static readonly int JumpIndexHash = Animator.StringToHash("JumpIndex");
 
         #endregion
 
@@ -33,13 +35,31 @@ namespace Core.Gameplay.Character
             HandleAnimations();
         }
 
+        private void OnDestroy()
+        {
+            RemoveListeners();
+        }
+
         #endregion
 
         #region PRIVATE_FUNCTIONS
 
+        private void OnJump(int index)
+        {
+            characterAnimator.SetBool(IsJumpingHash, true);
+            characterAnimator.SetInteger(JumpIndexHash, index);
+        }
+
+        private void OnGrounded()
+        {
+            characterAnimator.SetBool(IsJumpingHash, false);
+            characterAnimator.SetInteger(JumpIndexHash, 0);
+        }
+
         private void Init()
         {
             InitMovement();
+            AddListeners();
         }
 
         private void InitMovement()
@@ -70,6 +90,18 @@ namespace Core.Gameplay.Character
             {
                 characterAnimator.SetBool(IsRunningHash, false);
             }
+        }
+
+        private void AddListeners()
+        {
+            _movementController.Jump += OnJump;
+            _movementController.Grounded += OnGrounded;
+        }
+
+        private void RemoveListeners()
+        {
+            _movementController.Jump -= OnJump;
+            _movementController.Grounded -= OnGrounded;
         }
 
         #endregion

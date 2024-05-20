@@ -111,11 +111,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 2481763325342161339}
-  airGravity: 9.8
-  groundGravity: 0.5
-  movementSpeed: 1.5
   runMultiplier: 3
+  fallMultiplier: 2
+  groundGravity: -0.5
+  movementSpeed: 1.5
   rotationFactorPerFrame: 15
+  jumpSettings: {fileID: 11400000, guid: a12ed9c8362e2469f8f395b14ac4334e, type: 2}
 --- !u!114 &2481763325342161340
 MonoBehaviour:
   m_ObjectHideFlags: 0
