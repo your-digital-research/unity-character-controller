@@ -707,7 +707,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2481763325342161342, guid: 8f3ab56e308a74c139dd8a6fa3419ea6, type: 3}
       propertyPath: m_Name
-      value: CharacterController
+      value: P_CharacterController
       objectReference: {fileID: 0}
     - target: {fileID: 2481763325342161343, guid: 8f3ab56e308a74c139dd8a6fa3419ea6, type: 3}
       propertyPath: m_RootOrder

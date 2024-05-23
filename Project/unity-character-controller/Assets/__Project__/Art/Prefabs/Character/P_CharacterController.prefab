@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 2481763325342161338}
   - component: {fileID: 2481763325307949249}
   m_Layer: 0
-  m_Name: CharacterController
+  m_Name: P_CharacterController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -166,7 +166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2938c079b090146a7918565525abb740, type: 3}
       propertyPath: m_Name
-      value: Y Bot
+      value: FBX_Y_Bot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2938c079b090146a7918565525abb740, type: 3}
