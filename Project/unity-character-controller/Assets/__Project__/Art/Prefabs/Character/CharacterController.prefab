@@ -43,8 +43,7 @@ GameObject:
   - component: {fileID: 2481763325342161343}
   - component: {fileID: 2481763325342161339}
   - component: {fileID: 2481763325342161338}
-  - component: {fileID: 2481763325342161341}
-  - component: {fileID: 2481763325342161340}
+  - component: {fileID: 2481763325307949249}
   m_Layer: 0
   m_Name: CharacterController
   m_TagString: Untagged
@@ -98,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb8cac0d36a1c4cdeba9c6c3f5ddd34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2481763325342161341
+--- !u!114 &2481763325307949249
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,25 +106,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2481763325342161342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ea0be8b7e209480b9c184207406aaa6, type: 3}
+  m_Script: {fileID: 11500000, guid: 0bccb543f97c740b19b45e073b1655c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 2481763325342161339}
+  characterAnimator: {fileID: 2481763323938348585}
   movementSettings: {fileID: 11400000, guid: 6811d7bc7343d40b587abe06ba886633, type: 2}
   jumpSettings: {fileID: 11400000, guid: a12ed9c8362e2469f8f395b14ac4334e, type: 2}
---- !u!114 &2481763325342161340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2481763325342161342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d887533ba9ac4c138084e970c59ae33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterAnimator: {fileID: 2481763323938348585}
 --- !u!1001 &2481763323938348587
 PrefabInstance:
   m_ObjectHideFlags: 0

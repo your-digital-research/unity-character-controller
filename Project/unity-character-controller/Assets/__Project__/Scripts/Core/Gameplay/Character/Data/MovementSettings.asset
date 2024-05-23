@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c57ff8aff85ed4940b4a2761b8fa298f, type: 3}
   m_Name: MovementSettings
   m_EditorClassIdentifier: 
-  GroundGravity: -0.5
+  GroundGravity: -1
   MovementSpeed: 1.5
   RunMultiplier: 3
   FallMultiplier: 2
