@@ -15,4 +15,4 @@ MonoBehaviour:
   MaxJumpVarieties: 2
   JumpProperties:
     JumpTime: 0.5
-    MaxJumpHeight: 2
+    MaxJumpHeight: 1

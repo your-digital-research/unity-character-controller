@@ -25,8 +25,8 @@ namespace Core.Gameplay.Character
         {
             base.UpdateState();
 
-            Context.AppliedMovementX = Context.Input.x * Context.MovementSettings.RunMultiplier;
-            Context.AppliedMovementZ = Context.Input.y * Context.MovementSettings.RunMultiplier;
+            Context.AppliedMovementX = Context.RelativeInput.x * Context.MovementSettings.RunMultiplier;
+            Context.AppliedMovementZ = Context.RelativeInput.y * Context.MovementSettings.RunMultiplier;
 
             CheckSwitchStates();
         }

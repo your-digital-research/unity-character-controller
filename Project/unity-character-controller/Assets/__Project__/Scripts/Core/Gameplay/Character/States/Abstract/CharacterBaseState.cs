@@ -47,7 +47,7 @@ namespace Core.Gameplay.Character
 
         public virtual void EnterState()
         {
-            Debug.Log("Enter - > " + Type);
+            // Debug.Log("Enter - > " + Type);
         }
 
         public virtual void UpdateState()
@@ -57,7 +57,7 @@ namespace Core.Gameplay.Character
 
         public virtual void ExitState()
         {
-            Debug.Log("Exit - > " + Type);
+            // Debug.Log("Exit - > " + Type);
         }
 
         #endregion

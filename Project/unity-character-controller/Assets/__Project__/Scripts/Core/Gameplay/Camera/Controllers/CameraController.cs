@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
@@ -10,22 +9,14 @@ namespace Core.Gameplay.Camera
 
         [Header("Cameras")]
         [SerializeField] private CinemachineBrain brain;
-        [SerializeField] private List<CameraInstance> instances;
+        [SerializeField] private CinemachineFreeLook main;
 
         #endregion
 
         #region PROPERTIES
 
         public CinemachineBrain Brain => brain;
-
-        #endregion
-
-        #region PUBLIC_FUNCTIONS
-
-        public CinemachineVirtualCamera GetCameraByType(CameraKind kind)
-        {
-            return instances.Find(instance => instance.Kind == kind).VirtualCamera;
-        }
+        public CinemachineFreeLook Main => main;
 
         #endregion
     }

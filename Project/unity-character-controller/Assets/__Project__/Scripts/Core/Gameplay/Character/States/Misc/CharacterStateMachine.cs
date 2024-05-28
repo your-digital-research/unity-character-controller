@@ -1,3 +1,4 @@
+using Core.Gameplay.Camera;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,7 @@ namespace Core.Gameplay.Character
 
         [Header("References")]
         [SerializeField] private CharacterController characterController;
+        [SerializeField] private CameraController cameraController;
         [SerializeField] private Animator characterAnimator;
         [SerializeField] private MovementSettings movementSettings;
         [SerializeField] private JumpSettings jumpSettings;
@@ -31,6 +33,7 @@ namespace Core.Gameplay.Character
         private Vector3 _currentMovement;
         private Vector3 _currentRunMovement;
         private Vector2 _currentMovementInput;
+        private Vector2 _cameraRelativeInput;
 
         #endregion
 
@@ -84,6 +87,7 @@ namespace Core.Gameplay.Character
         }
 
         public Vector2 Input => _currentMovementInput;
+        public Vector2 RelativeInput => _cameraRelativeInput;
 
         #endregion
 
@@ -96,7 +100,7 @@ namespace Core.Gameplay.Character
 
         private void Start()
         {
-            UpdateMovement();
+            HandleMovement();
         }
 
         private void OnEnable()
@@ -106,8 +110,10 @@ namespace Core.Gameplay.Character
 
         private void Update()
         {
+            UpdateInput();
+
             HandleRotation();
-            UpdateMovement();
+            HandleMovement();
 
             CurrentState.UpdateStates();
         }
@@ -126,17 +132,37 @@ namespace Core.Gameplay.Character
 
         #region PRIVATE_FUNCTIONS
 
+        private Vector2 GetCameraRelativeInput()
+        {
+            Transform cameraTransform = cameraController.Main.transform;
+            Transform targetTransform = cameraController.Main.Follow;
+
+            Vector3 targetDirection = (targetTransform.position - cameraTransform.position).normalized;
+
+            Vector3 forward = Vector3.ProjectOnPlane(targetDirection, Vector3.up).normalized;
+            Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
+
+            Vector3 cameraRelativeMovement = forward * _currentMovementInput.y + right * _currentMovementInput.x;
+
+            return new Vector2(cameraRelativeMovement.x, cameraRelativeMovement.z);
+        }
+
         private void OnMovementInput(InputAction.CallbackContext obj)
         {
             _currentMovementInput = obj.ReadValue<Vector2>();
+        }
 
-            _currentMovement.x = _currentMovementInput.x;
-            _currentMovement.z = _currentMovementInput.y;
+        private void UpdateInput()
+        {
+            _cameraRelativeInput = GetCameraRelativeInput();
+
+            _currentMovement.x = _cameraRelativeInput.x;
+            _currentMovement.z = _cameraRelativeInput.y;
 
             _currentRunMovement.x = _currentMovementInput.x * movementSettings.RunMultiplier;
             _currentRunMovement.z = _currentMovementInput.y * movementSettings.RunMultiplier;
 
-            IsMovementPressed = _currentMovementInput.x != 0 || _currentMovementInput.y != 0;
+            IsMovementPressed = _cameraRelativeInput.x != 0 || _cameraRelativeInput.y != 0;
         }
 
         private void OnRun(InputAction.CallbackContext obj)
@@ -215,9 +241,11 @@ namespace Core.Gameplay.Character
             }
         }
 
-        private void UpdateMovement()
+        private void HandleMovement()
         {
-            characterController.Move(_appliedMovement * Time.deltaTime);
+            Vector3 motion = _appliedMovement * (movementSettings.MovementSpeed * Time.deltaTime);
+
+            characterController.Move(motion);
         }
 
         private void HandleRotation()

@@ -11,14 +11,14 @@ namespace Core.Gameplay.Camera
         [SerializeField] private CameraKind kind;
 
         [Header("References")]
-        [SerializeField] private CinemachineVirtualCamera virtualCamera;
+        [SerializeField] private CinemachineVirtualCameraBase virtualCamera;
 
         #endregion
 
         #region PROPERTIES
 
         public CameraKind Kind => kind;
-        public CinemachineVirtualCamera VirtualCamera => virtualCamera;
+        public CinemachineVirtualCameraBase VirtualCamera => virtualCamera;
 
         #endregion
     }
