@@ -49,7 +49,7 @@ namespace Context
 
         #region PRIVATE_VARIABLES
 
-        private bool IsAllLevelsLoaded()
+        private bool IsAllScenesLoaded()
         {
             int sceneCount = SceneManager.sceneCount;
 
@@ -125,7 +125,7 @@ namespace Context
 
         private async void Restart()
         {
-            if (_isRestarting || !IsAllLevelsLoaded()) return;
+            if (_isRestarting || !IsAllScenesLoaded()) return;
 
             _transitionView.Show(true);
 
