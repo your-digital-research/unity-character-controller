@@ -216,8 +216,9 @@ GameObject:
   - component: {fileID: 893068825}
   - component: {fileID: 893068827}
   - component: {fileID: 893068826}
+  - component: {fileID: 118982576120785328}
   m_Layer: 0
-  m_Name: Main
+  m_Name: Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -361,6 +362,20 @@ MonoBehaviour:
   AutoEnableInputs: 1
   XYAxis: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   ZAxis: {fileID: 0}
+--- !u!114 &118982576120785328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893068824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79f41c7398824230a22327f5d31a86b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kind: 1
+  virtualCamera: {fileID: 893068827}
 --- !u!1 &1370645850
 GameObject:
   m_ObjectHideFlags: 0
@@ -817,8 +832,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a16a869ce23c463d8c51af123c73587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blenderSettings: {fileID: 11400000, guid: f355ec31f71234a0b96f019a671a287b, type: 2}
+  cameraSettings: {fileID: 11400000, guid: 12d3fa6ffb04e41b38f3ba58e40b2eb6, type: 2}
   brain: {fileID: 8377794241930935833}
-  main: {fileID: 893068827}
+  cameraInstances:
+  - {fileID: 118982576120785328}
 --- !u!1 &8553806994091057524
 GameObject:
   m_ObjectHideFlags: 0

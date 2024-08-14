@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 336115449}
   m_Layer: 0
-  m_Name: Positions
+  m_Name: Points
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1251797727}
   m_Layer: 0
-  m_Name: CameraPoint
+  m_Name: Center
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,6 +161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb8cac0d36a1c4cdeba9c6c3f5ddd34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _actorStateMachine: {fileID: 2481763325307949249}
+  center: {fileID: 1251797727}
 --- !u!114 &2481763325307949249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +176,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 2481763325342161339}
-  cameraController: {fileID: 0}
   actorAnimator: {fileID: 2481763323938348585}
   movementSettings: {fileID: 11400000, guid: 6811d7bc7343d40b587abe06ba886633, type: 2}
   jumpSettings: {fileID: 11400000, guid: a12ed9c8362e2469f8f395b14ac4334e, type: 2}

@@ -1,4 +1,5 @@
 using System;
+using R3;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -29,6 +30,8 @@ namespace Gameplay
         private int _jumpIndex;
         private bool _isAtJump;
 
+        private IDisposable _updateDisposable;
+
         #endregion
 
         #region PROPERTIES
@@ -56,17 +59,14 @@ namespace Gameplay
             InitInput();
         }
 
+        private void Start()
+        {
+            Init();
+        }
+
         private void OnEnable()
         {
             ToggleActorControls(true);
-        }
-
-        private void Update()
-        {
-            HandleRotation();
-            UpdateMovement();
-            HandleGravity();
-            HandleJump();
         }
 
         private void OnDisable()
@@ -76,6 +76,9 @@ namespace Gameplay
 
         private void OnDestroy()
         {
+            StopUpdate();
+
+            RemoveListeners();
             ResetInput();
         }
 
@@ -106,33 +109,22 @@ namespace Gameplay
             IsJumpPressed = obj.ReadValueAsButton();
         }
 
+        private void Init()
+        {
+            InitInput();
+
+            AddListeners();
+
+            StartUpdate();
+        }
+
         private void InitInput()
         {
             _actorInput = new ActorInput();
-
-            _actorInput.ActorControls.Move.started += OnMovementInput;
-            _actorInput.ActorControls.Move.canceled += OnMovementInput;
-            _actorInput.ActorControls.Move.performed += OnMovementInput;
-
-            _actorInput.ActorControls.Run.started += OnRun;
-            _actorInput.ActorControls.Run.canceled += OnRun;
-
-            _actorInput.ActorControls.Jump.started += OnJump;
-            _actorInput.ActorControls.Jump.canceled += OnJump;
         }
 
         private void ResetInput()
         {
-            _actorInput.ActorControls.Move.started -= OnMovementInput;
-            _actorInput.ActorControls.Move.canceled -= OnMovementInput;
-            _actorInput.ActorControls.Move.performed -= OnMovementInput;
-
-            _actorInput.ActorControls.Run.started -= OnRun;
-            _actorInput.ActorControls.Run.canceled -= OnRun;
-
-            _actorInput.ActorControls.Jump.started -= OnJump;
-            _actorInput.ActorControls.Jump.canceled -= OnJump;
-
             _actorInput = null;
         }
 
@@ -240,6 +232,51 @@ namespace Gameplay
             {
                 IsJumping = false;
             }
+        }
+
+        private void StartUpdate()
+        {
+            _updateDisposable ??= Observable
+                .EveryUpdate(UnityFrameProvider.Update)
+                .Subscribe(_ =>
+                {
+                    HandleRotation();
+                    UpdateMovement();
+                    HandleGravity();
+                    HandleJump();
+                });
+        }
+
+        private void StopUpdate()
+        {
+            _updateDisposable?.Dispose();
+            _updateDisposable = null;
+        }
+
+        private void AddListeners()
+        {
+            _actorInput.ActorControls.Move.started += OnMovementInput;
+            _actorInput.ActorControls.Move.canceled += OnMovementInput;
+            _actorInput.ActorControls.Move.performed += OnMovementInput;
+
+            _actorInput.ActorControls.Run.started += OnRun;
+            _actorInput.ActorControls.Run.canceled += OnRun;
+
+            _actorInput.ActorControls.Jump.started += OnJump;
+            _actorInput.ActorControls.Jump.canceled += OnJump;
+        }
+
+        private void RemoveListeners()
+        {
+            _actorInput.ActorControls.Move.started -= OnMovementInput;
+            _actorInput.ActorControls.Move.canceled -= OnMovementInput;
+            _actorInput.ActorControls.Move.performed -= OnMovementInput;
+
+            _actorInput.ActorControls.Run.started -= OnRun;
+            _actorInput.ActorControls.Run.canceled -= OnRun;
+
+            _actorInput.ActorControls.Jump.started -= OnJump;
+            _actorInput.ActorControls.Jump.canceled -= OnJump;
         }
 
         #endregion

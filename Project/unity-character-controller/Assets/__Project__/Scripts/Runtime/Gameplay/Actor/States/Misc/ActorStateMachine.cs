@@ -1,3 +1,5 @@
+using System;
+using R3;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,7 +12,6 @@ namespace Gameplay
 
         [Header("References")]
         [SerializeField] private CharacterController characterController;
-        [SerializeField] private CameraController cameraController;
         [SerializeField] private Animator actorAnimator;
         [SerializeField] private MovementSettings movementSettings;
         [SerializeField] private JumpSettings jumpSettings;
@@ -34,6 +35,8 @@ namespace Gameplay
         private Vector2 _currentMovementInput;
         private Vector2 _cameraRelativeInput;
 
+        private IDisposable _updateDisposable;
+
         #endregion
 
         #region PROPERTIES
@@ -45,6 +48,8 @@ namespace Gameplay
         public ActorState RootState { get; set; }
         public ActorState SubState { get; set; }
         public ActorBaseState CurrentState { get; set; }
+
+        public CameraController CameraController { get; set; }
 
         public bool IsFalling { get; set; }
         public bool IsJumping { get; set; }
@@ -94,27 +99,12 @@ namespace Gameplay
 
         private void Awake()
         {
-            Init();
-        }
-
-        private void Start()
-        {
-            HandleMovement();
+            InitInput();
         }
 
         private void OnEnable()
         {
             ToggleActorControls(true);
-        }
-
-        private void Update()
-        {
-            UpdateInput();
-
-            HandleRotation();
-            HandleMovement();
-
-            CurrentState.UpdateStates();
         }
 
         private void OnDisable()
@@ -124,7 +114,24 @@ namespace Gameplay
 
         private void OnDestroy()
         {
+            StopUpdate();
+
+            RemoveListeners();
             ResetInput();
+        }
+
+        #endregion
+
+        #region PUBLIC_FUNCTIONS
+
+        public void Init()
+        {
+            InitFactory();
+            InitState();
+
+            AddListeners();
+
+            StartUpdate();
         }
 
         #endregion
@@ -133,8 +140,8 @@ namespace Gameplay
 
         private Vector2 GetCameraRelativeInput()
         {
-            Transform cameraTransform = cameraController.Main.transform;
-            Transform targetTransform = cameraController.Main.Follow;
+            Transform cameraTransform = CameraController.Current.transform;
+            Transform targetTransform = CameraController.Current.VirtualCamera.Follow;
 
             Vector3 targetDirection = (targetTransform.position - cameraTransform.position).normalized;
 
@@ -175,13 +182,6 @@ namespace Gameplay
             RequireNewJumpPress = false;
         }
 
-        private void Init()
-        {
-            InitFactory();
-            InitState();
-            InitInput();
-        }
-
         private void InitFactory()
         {
             _stateFactory = new ActorStateFactory(this);
@@ -200,30 +200,10 @@ namespace Gameplay
         private void InitInput()
         {
             _actorInput = new ActorInput();
-
-            _actorInput.ActorControls.Move.started += OnMovementInput;
-            _actorInput.ActorControls.Move.canceled += OnMovementInput;
-            _actorInput.ActorControls.Move.performed += OnMovementInput;
-
-            _actorInput.ActorControls.Run.started += OnRun;
-            _actorInput.ActorControls.Run.canceled += OnRun;
-
-            _actorInput.ActorControls.Jump.started += OnJump;
-            _actorInput.ActorControls.Jump.canceled += OnJump;
         }
 
         private void ResetInput()
         {
-            _actorInput.ActorControls.Move.started -= OnMovementInput;
-            _actorInput.ActorControls.Move.canceled -= OnMovementInput;
-            _actorInput.ActorControls.Move.performed -= OnMovementInput;
-
-            _actorInput.ActorControls.Run.started -= OnRun;
-            _actorInput.ActorControls.Run.canceled -= OnRun;
-
-            _actorInput.ActorControls.Jump.started -= OnJump;
-            _actorInput.ActorControls.Jump.canceled -= OnJump;
-
             _actorInput = null;
         }
 
@@ -264,6 +244,53 @@ namespace Gameplay
             Quaternion finalRotation = Quaternion.Slerp(currentRotation, targetRotation, t);
 
             transform.rotation = finalRotation;
+        }
+
+        private void StartUpdate()
+        {
+            _updateDisposable ??= Observable
+                .EveryUpdate(UnityFrameProvider.Update)
+                .Subscribe(_ =>
+                {
+                    UpdateInput();
+
+                    HandleRotation();
+                    HandleMovement();
+
+                    CurrentState.UpdateStates();
+                });
+        }
+
+        private void StopUpdate()
+        {
+            _updateDisposable?.Dispose();
+            _updateDisposable = null;
+        }
+
+        private void AddListeners()
+        {
+            _actorInput.ActorControls.Move.started += OnMovementInput;
+            _actorInput.ActorControls.Move.canceled += OnMovementInput;
+            _actorInput.ActorControls.Move.performed += OnMovementInput;
+
+            _actorInput.ActorControls.Run.started += OnRun;
+            _actorInput.ActorControls.Run.canceled += OnRun;
+
+            _actorInput.ActorControls.Jump.started += OnJump;
+            _actorInput.ActorControls.Jump.canceled += OnJump;
+        }
+
+        private void RemoveListeners()
+        {
+            _actorInput.ActorControls.Move.started -= OnMovementInput;
+            _actorInput.ActorControls.Move.canceled -= OnMovementInput;
+            _actorInput.ActorControls.Move.performed -= OnMovementInput;
+
+            _actorInput.ActorControls.Run.started -= OnRun;
+            _actorInput.ActorControls.Run.canceled -= OnRun;
+
+            _actorInput.ActorControls.Jump.started -= OnJump;
+            _actorInput.ActorControls.Jump.canceled -= OnJump;
         }
 
         #endregion

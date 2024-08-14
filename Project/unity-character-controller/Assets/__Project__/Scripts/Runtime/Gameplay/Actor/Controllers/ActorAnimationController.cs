@@ -1,3 +1,5 @@
+using System;
+using R3;
 using UnityEngine;
 
 namespace Gameplay
@@ -16,6 +18,8 @@ namespace Gameplay
 
         private ActorMovementController _movementController;
 
+        private IDisposable _updateDisposable;
+
         private static readonly int IsWalkingHash = Animator.StringToHash("IsWalking");
         private static readonly int IsRunningHash = Animator.StringToHash("IsRunning");
         private static readonly int IsJumpingHash = Animator.StringToHash("IsJumping");
@@ -25,18 +29,15 @@ namespace Gameplay
 
         #region MONO
 
-        private void Awake()
+        private void Start()
         {
             Init();
         }
 
-        private void Update()
-        {
-            HandleAnimations();
-        }
-
         private void OnDestroy()
         {
+            StopUpdate();
+
             RemoveListeners();
         }
 
@@ -59,7 +60,10 @@ namespace Gameplay
         private void Init()
         {
             InitMovement();
+
             AddListeners();
+
+            StartUpdate();
         }
 
         private void InitMovement()
@@ -90,6 +94,22 @@ namespace Gameplay
             {
                 actorAnimator.SetBool(IsRunningHash, false);
             }
+        }
+
+        private void StartUpdate()
+        {
+            _updateDisposable ??= Observable
+                .EveryUpdate(UnityFrameProvider.Update)
+                .Subscribe(_ =>
+                {
+                    HandleAnimations();
+                });
+        }
+
+        private void StopUpdate()
+        {
+            _updateDisposable?.Dispose();
+            _updateDisposable = null;
         }
 
         private void AddListeners()
