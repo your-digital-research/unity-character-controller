@@ -11,7 +11,7 @@ namespace Context
         #region SERIALIZED_VARIABLES
 
         [Header("Settings")]
-        [SerializeField] GameSettings gameSettings;
+        [SerializeField] private GameSettings gameSettings;
 
         #endregion
 
